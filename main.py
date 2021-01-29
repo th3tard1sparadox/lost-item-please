@@ -1,8 +1,10 @@
 import arcade
+from person import Person
 
 # Constants
-SCREEN_WIDTH = 1000
-SCREEN_HEIGHT = 650
+SCREEN_RATIO = 2
+SCREEN_WIDTH = 1920 // SCREEN_RATIO
+SCREEN_HEIGHT = 1080 // SCREEN_RATIO
 SCREEN_TITLE = "Lost Item Please"
 
 class MyGame(arcade.Window):
@@ -19,13 +21,21 @@ class MyGame(arcade.Window):
 
     def setup(self):
         """ Set up the game here. Call this function to restart the game. """
-        pass
+        self.person = Person(100, 100)
 
     def on_draw(self):
         """ Render the screen. """
 
         arcade.start_render()
-                # Code to draw the screen goes here
+        self.person.draw()
+        self.person.travel_to(500, 200)
+        arcade.draw_rectangle_filled(500, 200,
+                Person.SIZE, Person.SIZE,
+                arcade.color.WHITE)
+
+    def on_update(self, delta):
+        """ Game logics """
+        self.person.update(delta)
 
 
 def main():
