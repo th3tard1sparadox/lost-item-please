@@ -24,12 +24,11 @@ class Person():
         self.goal_y = None
         self.is_traveling = False
 
-        self.name = random.choice(assets.person_names)
+        self.name = random.choice(list(assets.persons))
         self.texture = assets.persons[self.name]
 
     def update(self, delta):
         if not self.is_traveling:
-            print(self.rotation, flush=True)
             if self.rotation % 360 > self.vr * delta:
                 self.vr = Person.MAX_ROTATION_VEL
                 self.rotation += delta * self.vr
