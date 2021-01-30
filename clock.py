@@ -4,8 +4,7 @@ import assets
 class Clock():
 
     SCALE = 1
-    DAY_TIME = 60
-    PADDING_TIME = 2
+    DAY_TIME = 90
 
     START_TIME = 8 * 60
     HOURS = 17 - 8
@@ -42,4 +41,4 @@ class Clock():
         )
 
     def is_completed(self):
-        return self.time > Clock.DAY_TIME + Clock.PADDING_TIME
+        return self.time > Clock.DAY_TIME
