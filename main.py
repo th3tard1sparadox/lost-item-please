@@ -7,6 +7,7 @@ from enum import Enum
 from person import Person
 from item import Item
 from button import Button
+from clock import Clock
 
 # Constants
 SCREEN_WIDTH = 1920
@@ -22,6 +23,8 @@ GRID_POS = (SCREEN_WIDTH - 4 * GRID_ITEM_SIZE, GRID_ITEM_SIZE)
 ITEM_PLACE_RANGE = (IMAGE_SIZE + GRID_ITEM_SIZE) / 2 / 1.7
 
 BUTTON_POS = (GRID_POS[0] - IMAGE_SIZE, IMAGE_SIZE / 2)
+
+CLOCK_POS = (300, 100)
 
 def dist(x1, y1, x2, y2):
     return ((x1 - x2)**2 + (y1 - y2)**2)**.5
@@ -62,6 +65,7 @@ class MyGame(arcade.Window):
         self.state = State.CHOOSING
         self.sound_player = None
         self.button = Button(*BUTTON_POS)
+        self.clock = Clock(*CLOCK_POS)
 
         self.set_fullscreen(True)
 
@@ -71,11 +75,13 @@ class MyGame(arcade.Window):
         arcade.start_render()
         self.person.draw()
         self.button.draw()
+        self.clock.draw()
         for item in self.items: item.draw()
 
     def on_update(self, delta):
         """ Game logic """
         self.person.update(delta)
+        self.clock.update(delta)
         for item in self.items: item.update(delta)
         if self.held_item is not None:
             self.held_item.move(self.mouse_x, self.mouse_y)
