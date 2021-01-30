@@ -6,6 +6,7 @@ import assets
 from enum import Enum
 from person import Person
 from item import Item
+from button import Button
 
 # Constants
 SCREEN_WIDTH = 1920
@@ -20,6 +21,8 @@ GRID_POS = (SCREEN_WIDTH - 4 * GRID_ITEM_SIZE, GRID_ITEM_SIZE)
 
 ITEM_PLACE_RANGE = (IMAGE_SIZE + GRID_ITEM_SIZE) / 2 / 1.7
 
+BUTTON_POS = (GRID_POS[0] - IMAGE_SIZE, IMAGE_SIZE / 2)
+
 def dist(x1, y1, x2, y2):
     return ((x1 - x2)**2 + (y1 - y2)**2)**.5
 
@@ -29,7 +32,7 @@ def is_playing(player):
 class State(Enum):
     # Game states
     CHOOSING        = 0
-    ITEM_PLACED     = 1
+    CHOICE_MADE     = 1
 
     # Person states
     ENTER           = 10
@@ -58,12 +61,14 @@ class MyGame(arcade.Window):
         self.init_person()
         self.state = State.CHOOSING
         self.sound_player = None
+        self.button = Button(*BUTTON_POS)
 
     def on_draw(self):
         """ Render the screen. """
 
         arcade.start_render()
         self.person.draw()
+        self.button.draw()
         for item in self.items: item.draw()
 
     def on_update(self, delta):
@@ -74,7 +79,7 @@ class MyGame(arcade.Window):
             self.held_item.move(self.mouse_x, self.mouse_y)
 
 
-        if self.state == State.ITEM_PLACED and not self.person.is_traveling:
+        if self.state == State.CHOICE_MADE and not self.person.is_traveling:
             self.state = State.CHOOSING
 
 
@@ -142,6 +147,14 @@ class MyGame(arcade.Window):
                 self.held_item = item
                 break
 
+        if dist(self.button.x, self.button.y, x, y) < IMAGE_SIZE / 2 * Button.SCALE * .9:
+            if self.state == State.CHOOSING:
+               new_x = self.person.x - IMAGE_SIZE
+               self.person.set_state(State.AWAY_WRONG)
+               self.person.travel_to(new_x, SCREEN_HEIGHT + IMAGE_SIZE)
+               self.state = State.CHOICE_MADE
+
+
     def on_mouse_release(self, x, y, button, _modifiers):
         """ Handle mouse release """
         if button != 1: # Left
@@ -158,7 +171,7 @@ class MyGame(arcade.Window):
                        self.person.set_state(State.AWAY_WRONG)
 
                    self.person.travel_to(new_x, SCREEN_HEIGHT + IMAGE_SIZE)
-                   self.state = State.ITEM_PLACED
+                   self.state = State.CHOICE_MADE
                    self.items.remove(self.held_item)
                    self.person.give_item(self.held_item)
 
@@ -171,6 +184,12 @@ class MyGame(arcade.Window):
         self.mouse_x = x
         self.mouse_y = y
 
+    def on_key_press(self, key, modifiers):
+        """Called whenever a key is pressed. """
+        if key == arcade.key.F:
+            self.set_fullscreen(not self.fullscreen)
+            width, height = self.get_size()
+            self.set_viewport(0, width, 0, height)
 
 def main():
     """ Main method """
