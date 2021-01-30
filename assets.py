@@ -3,6 +3,7 @@ import arcade
 
 PERSON_DIR = "res/image/person"
 ITEM_DIR = "res/image/item"
+BACKGROUND_DIR = "res/image/background"
 SOUND_DIR = "res/sound"
 DESC_DIR = "res/desc/"
 
@@ -19,6 +20,7 @@ def load_dir(path, loader):
 persons = load_dir(PERSON_DIR, arcade.load_texture)
 items = load_dir(ITEM_DIR, arcade.load_texture)
 sounds = load_dir(SOUND_DIR, arcade.load_sound)
+backgrounds = load_dir(BACKGROUND_DIR, arcade.load_texture)
 descriptions = {}
 
 with open(DESC_DIR + "items.txt", 'r') as file:
@@ -30,3 +32,5 @@ for line in lines:
 
 clock_image = arcade.load_texture("res/image/clock.png")
 note_image = arcade.load_texture("res/image/note.png")
+
+

@@ -28,6 +28,7 @@ class Person():
         self.is_traveling = False
 
         self.name = random.choice(list(assets.persons))
+        # self.name = "yehaw" # TEMPORARY
         self.texture = assets.persons[self.name]
 
         self.held_item = None
@@ -122,7 +123,7 @@ class Person():
             return arcade.play_sound(assets.sounds[f"{self.name}_{sound}"])
         else:
             p = arcade.play_sound(assets.sounds["silence"])
-            arcade.stop_sound(p)
+            p.pause()
             return p
 
     def pick_item(self, items):

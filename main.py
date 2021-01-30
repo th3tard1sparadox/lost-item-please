@@ -6,9 +6,14 @@ import assets
 from enum import Enum
 from person import Person
 from item import Item
+from id_card import IdCard
+
 from button import Button
 from clock import Clock
 from note import Note
+
+
+
 
 # Constants
 SCREEN_WIDTH = 1920
@@ -68,6 +73,7 @@ class MyGame(arcade.Window):
         self.clock = Clock(*CLOCK_POS)
         self.init_items()
         self.init_person()
+        self.init_idcard()
         self.state = State.CHOOSING
         self.sound_player = None
 
@@ -78,10 +84,16 @@ class MyGame(arcade.Window):
 
         arcade.start_render()
         self.person.draw()
+        self.id_card.draw()
+
         self.button.draw()
         self.clock.draw()
         self.note.draw()
         for item in reversed(self.items): item.draw()
+
+
+
+
 
     def on_update(self, delta):
         """ Game logic """
@@ -112,15 +124,19 @@ class MyGame(arcade.Window):
         elif self.person.state in [State.AWAY_RIGHT, State.AWAY_WRONG]:
             if not is_playing(self.sound_player):
                 if self.person.state == State.AWAY_RIGHT:
-                    sound = "right" 
+                    sound = "right"
                 else:
                     sound = "wrong"
                 self.sound_player = self.person.play_sound(sound)
                 self.person.set_state(State.EXIT)
 
         elif self.person.state == State.EXIT and not self.person.is_traveling:
-            self.init_person()
 
+            if self.id_card.is_false():
+                print(self.id_card.invalidity_reason())
+
+            self.init_person()
+            self.init_idcard()
 
     def init_items(self):
         """ Create a 3x4 grid of items """
@@ -147,6 +163,15 @@ class MyGame(arcade.Window):
         self.person.set_state(State.ENTER)
         self.person.pick_item(self.items)
         self.note.set_text(assets.descriptions[self.person.wanted_item.name])
+
+
+    def init_idcard(self):
+        """
+        Inits the id card of the current person with a 30% chance of the
+        card being false.
+        """
+        self.id_card = IdCard(self.person, random.choices([True, False],[30,70]))
+
 
     def on_mouse_press(self, x, y, button, _modifiers):
         """ Handle mouse press """
