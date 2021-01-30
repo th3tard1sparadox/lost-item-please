@@ -13,8 +13,6 @@ from clock import Clock
 from note import Note
 
 
-
-
 # Constants
 SCREEN_WIDTH = 1920
 SCREEN_HEIGHT = 1080
@@ -28,9 +26,9 @@ GRID_POS = (SCREEN_WIDTH - 4 * GRID_ITEM_SIZE, GRID_ITEM_SIZE)
 
 ITEM_PLACE_RANGE = (IMAGE_SIZE + GRID_ITEM_SIZE) / 2 / 1.7
 
-BUTTON_POS = (950, 200)
+BUTTON_POS = (915, 195)
 
-CLOCK_POS = (950, 400)
+CLOCK_POS = (910, 400)
 
 NOTE_POS = (400, 300)
 
@@ -69,7 +67,7 @@ class MyGame(arcade.Window):
     def setup(self):
         """ Set up the game here. Call this function to restart the game. """
         self.note = Note(*NOTE_POS)
-        self.note.day = 2
+        self.note.day = 1
         self.button = Button(*BUTTON_POS)
         self.clock = Clock(*CLOCK_POS)
         self.init_items()
@@ -84,6 +82,11 @@ class MyGame(arcade.Window):
         """ Render the screen. """
 
         arcade.start_render()
+        arcade.draw_scaled_texture_rectangle(SCREEN_WIDTH / 2,
+                                             SCREEN_HEIGHT / 2,
+                                             assets.bg_image,
+                                             1,
+                                             0)
         self.person.draw()
         self.id_card.draw()
 
@@ -91,10 +94,6 @@ class MyGame(arcade.Window):
         self.clock.draw()
         self.note.draw()
         for item in reversed(self.items): item.draw()
-
-
-
-
 
     def on_update(self, delta):
         """ Game logic """
@@ -188,7 +187,7 @@ class MyGame(arcade.Window):
                 self.held_item = item
                 break
 
-        if dist(self.button.x, self.button.y, x, y) < IMAGE_SIZE / 2 * Button.SCALE * .9:
+        if dist(self.button.x, self.button.y, x, y) < 70 * Button.SCALE:
             if self.state == State.CHOOSING:
                new_x = self.person.x - IMAGE_SIZE
                self.person.set_state(State.AWAY_WRONG)
