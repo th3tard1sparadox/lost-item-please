@@ -24,10 +24,10 @@ class Note():
         )
         arcade.draw_text(
             self.text,
-            self.x - 40,
+            self.x - 50,
             self.y,
             arcade.color.BLACK,
-            50,
+            48,
             align="center",
             anchor_x="center",
             anchor_y="center",
