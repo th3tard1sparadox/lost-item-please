@@ -32,4 +32,6 @@ class Item():
         if f"item_{self.name}" in assets.sounds:
             return arcade.play_sound(assets.sounds[f"item_{self.name}"])
         else:
-            return arcade.play_sound(assets.sounds["silence"])
+            p = arcade.play_sound(assets.sounds["silence"])
+            arcade.stop_sound(p)
+            return p

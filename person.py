@@ -122,10 +122,12 @@ class Person():
         if f"{self.name}_{sound}" in assets.sounds:
             return arcade.play_sound(assets.sounds[f"{self.name}_{sound}"])
         else:
-            return arcade.play_sound(assets.sounds["silence"])
+            p = arcade.play_sound(assets.sounds["silence"])
+            arcade.stop_sound(p)
+            return p
 
     def pick_item(self, items):
         if items:
             self.wanted_item = random.choice(items)
         else:
-            self.wanted_item = Item(0, 0)
+            self.wanted_item = Item(0, 0, "")
