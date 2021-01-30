@@ -1,6 +1,9 @@
+import math
 import arcade
 import assets
 import random
+
+from item import Item
 
 def clamp(low, v, high):
     return min(max(v, low), high)
@@ -26,6 +29,11 @@ class Person():
 
         self.name = random.choice(list(assets.persons))
         self.texture = assets.persons[self.name]
+
+        self.held_item = None
+        self.item_d = None
+        self.item_r = None
+        self.item_or = None
 
     def update(self, delta):
         if not self.is_traveling:
@@ -64,8 +72,24 @@ class Person():
         self.rotation += delta * self.vr
 
     def draw(self):
-        arcade.draw_scaled_texture_rectangle(self.x, self.y,
-                self.texture, 1, self.rotation)
+        arcade.draw_scaled_texture_rectangle(
+            self.x,
+            self.y,
+            self.texture,
+            1,
+            self.rotation
+        )
+
+        if self.held_item is not None:
+            rad = math.radians(self.rotation) + self.item_r
+            arcade.draw_scaled_texture_rectangle(
+                self.x + math.cos(rad) * self.item_d,
+                self.y + math.sin(rad) * self.item_d,
+                self.held_item.texture,
+                Item.SCALE,
+                self.rotation + math.degrees(self.item_or)
+            )
+
 
     def travel_to(self, x, y):
         self.is_traveling = True
@@ -74,3 +98,14 @@ class Person():
         self.vx = 0
         self.vy = 0
         self.vr = 0
+
+    def give_item(self, item):
+        self.held_item = item
+        item_x = item.x - self.x
+        item_y = item.y - self.y
+        self.item_d = (item_x**2 + item_y**2)**.5
+        self.item_r = math.atan2(item_y, item_x)
+
+        # Offset the rotation in case of spinning
+        self.item_r -= math.radians(self.rotation)
+        self.item_or = -math.radians(self.rotation)

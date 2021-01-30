@@ -1,6 +1,8 @@
 import math
 import arcade
 import random
+
+from enum import Enum
 from person import Person
 from item import Item
 
@@ -15,8 +17,14 @@ GRID_ITEM_SIZE = IMAGE_SIZE * Item.SCALE * .8
 GRID_ITEM_RAND_MAX_OFFSET = 40
 GRID_POS = (SCREEN_WIDTH - 4 * GRID_ITEM_SIZE, GRID_ITEM_SIZE)
 
+ITEM_PLACE_RANGE = (IMAGE_SIZE + GRID_ITEM_SIZE) / 2 / 1.7
+
 def dist(x1, y1, x2, y2):
     return ((x1 - x2)**2 + (y1 - y2)**2)**.5
+
+class State(Enum):
+    CHOOSING = 1
+    ITEM_PLACED = 2
 
 class MyGame(arcade.Window):
     """
@@ -32,10 +40,9 @@ class MyGame(arcade.Window):
 
     def setup(self):
         """ Set up the game here. Call this function to restart the game. """
-        self.person = Person(100, 100)
-        self.person.travel_to(500, 800)
-
         self.init_items()
+        self.init_person()
+        self.state = State.CHOOSING
 
     def on_draw(self):
         """ Render the screen. """
@@ -50,6 +57,10 @@ class MyGame(arcade.Window):
         for item in self.items: item.update(delta)
         if self.held_item is not None:
             self.held_item.move(self.mouse_x, self.mouse_y)
+
+        if self.state == State.ITEM_PLACED and not self.person.is_traveling:
+            self.state = State.CHOOSING
+            self.init_person()
 
     def init_items(self):
         """ Create a 3x4 grid of items """
@@ -67,6 +78,11 @@ class MyGame(arcade.Window):
                          oy + ry + GRID_ITEM_SIZE * r)
                 )
 
+    def init_person(self):
+        """ Create a person that travels to its position """
+        self.person = Person(100, 100)
+        self.person.travel_to(500, 800)
+
     def on_mouse_press(self, x, y, button, _modifiers):
         """ Handle mouse press """
         if button != 1: # Left
@@ -80,12 +96,20 @@ class MyGame(arcade.Window):
                 self.held_item = item
                 break
 
-    def on_mouse_release(self, _x, _y, button, _modifiers):
+    def on_mouse_release(self, x, y, button, _modifiers):
         """ Handle mouse release """
         if button != 1: # Left
             return
 
         if self.held_item is not None:
+            if self.state == State.CHOOSING \
+               and dist(x, y, self.person.x, self.person.y) < ITEM_PLACE_RANGE:
+                   self.person.travel_to(self.person.x + IMAGE_SIZE,
+                                         SCREEN_HEIGHT + IMAGE_SIZE)
+                   self.state = State.ITEM_PLACED
+                   self.items.remove(self.held_item)
+                   self.person.give_item(self.held_item)
+
             self.held_item.x = self.held_item.orig_x
             self.held_item.y = self.held_item.orig_y
             self.held_item = None
@@ -94,6 +118,7 @@ class MyGame(arcade.Window):
         """ Handle mouse release """
         self.mouse_x = x
         self.mouse_y = y
+
 
 def main():
     """ Main method """
