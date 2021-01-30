@@ -32,5 +32,5 @@ for line in lines:
 
 clock_image = arcade.load_texture("res/image/clock.png")
 note_image = arcade.load_texture("res/image/note.png")
-
+picture_image = arcade.load_texture("res/image/picture.png")
 

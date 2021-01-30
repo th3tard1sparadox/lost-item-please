@@ -69,6 +69,7 @@ class MyGame(arcade.Window):
     def setup(self):
         """ Set up the game here. Call this function to restart the game. """
         self.note = Note(*NOTE_POS)
+        self.note.day = 2
         self.button = Button(*BUTTON_POS)
         self.clock = Clock(*CLOCK_POS)
         self.init_items()
@@ -162,7 +163,7 @@ class MyGame(arcade.Window):
         self.person.travel_to(500, 800)
         self.person.set_state(State.ENTER)
         self.person.pick_item(self.items)
-        self.note.set_text(assets.descriptions[self.person.wanted_item.name])
+        self.note.set_item(self.person.wanted_item.name)
 
 
     def init_idcard(self):
