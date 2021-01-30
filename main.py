@@ -22,6 +22,9 @@ ITEM_PLACE_RANGE = (IMAGE_SIZE + GRID_ITEM_SIZE) / 2 / 1.7
 def dist(x1, y1, x2, y2):
     return ((x1 - x2)**2 + (y1 - y2)**2)**.5
 
+def is_playing(player):
+    return player is not None and player.playing
+
 class State(Enum):
     # Game states
     CHOOSING        = 0
@@ -32,7 +35,9 @@ class State(Enum):
     INTRO           = 11
     DESCRIBE        = 12
     WAITING         = 13
-    AWAY            = 14
+    AWAY_RIGHT      = 14
+    AWAY_WRONG      = 15
+    EXIT            = 16
 
 class MyGame(arcade.Window):
     """
@@ -70,16 +75,28 @@ class MyGame(arcade.Window):
 
         if self.state == State.ITEM_PLACED and not self.person.is_traveling:
             self.state = State.CHOOSING
-            self.init_person()
 
 
         if self.person.state == State.ENTER and not self.person.is_traveling:
             self.person.set_state(State.INTRO)
 
         elif self.person.state == State.INTRO:
-            if self.sound_player is None or not self.sound_player.playing:
+            if not is_playing(self.sound_player):
                 self.sound_player = self.person.play_sound("intro")
                 self.person.set_state(State.WAITING)
+
+        elif self.person.state in [State.AWAY_RIGHT, State.AWAY_WRONG]:
+            if not is_playing(self.sound_player):
+                if self.person.state == State.AWAY_RIGHT:
+                    sound = "right" 
+                else:
+                    sound = "wrong"
+                self.sound_player = self.person.play_sound(sound)
+                self.person.set_state(State.EXIT)
+
+        elif self.person.state == State.EXIT and not self.person.is_traveling:
+            self.init_person()
+
 
     def init_items(self):
         """ Create a 3x4 grid of items """
@@ -102,6 +119,7 @@ class MyGame(arcade.Window):
         self.person = Person(100, 100)
         self.person.travel_to(500, 800)
         self.person.set_state(State.ENTER)
+        self.person.pick_item(self.items)
 
     def on_mouse_press(self, x, y, button, _modifiers):
         """ Handle mouse press """
@@ -124,12 +142,17 @@ class MyGame(arcade.Window):
         if self.held_item is not None:
             if self.state == State.CHOOSING \
                and dist(x, y, self.person.x, self.person.y) < ITEM_PLACE_RANGE:
-                   self.person.travel_to(self.person.x + IMAGE_SIZE,
-                                         SCREEN_HEIGHT + IMAGE_SIZE)
+                   if self.person.wanted_item.name == self.held_item.name:
+                       new_x = self.person.x + IMAGE_SIZE
+                       self.person.set_state(State.AWAY_RIGHT)
+                   else:
+                       new_x = self.person.x - IMAGE_SIZE
+                       self.person.set_state(State.AWAY_WRONG)
+
+                   self.person.travel_to(new_x, SCREEN_HEIGHT + IMAGE_SIZE)
                    self.state = State.ITEM_PLACED
                    self.items.remove(self.held_item)
                    self.person.give_item(self.held_item)
-                   self.person.set_state(State.AWAY)
 
             self.held_item.x = self.held_item.orig_x
             self.held_item.y = self.held_item.orig_y

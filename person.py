@@ -38,6 +38,8 @@ class Person():
 
         self.state = None
 
+        self.wanted_item = None
+
     def update(self, delta):
         if not self.is_traveling:
             if self.rotation % 360 > self.vr * delta:
@@ -121,3 +123,9 @@ class Person():
             return arcade.play_sound(assets.sounds[f"{self.name}_{sound}"])
         else:
             return arcade.play_sound(assets.sounds["silence"])
+
+    def pick_item(self, items):
+        if items:
+            self.wanted_item = random.choice(items)
+        else:
+            self.wanted_item = Item(0, 0)
