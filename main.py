@@ -1,4 +1,6 @@
+import math
 import arcade
+import random
 from person import Person
 from item import Item
 
@@ -8,6 +10,10 @@ SCREEN_HEIGHT = 1080
 SCREEN_TITLE = "Lost Item Please"
 
 IMAGE_SIZE = 500
+
+GRID_ITEM_SIZE = IMAGE_SIZE * Item.SCALE * .8
+GRID_ITEM_RAND_MAX_OFFSET = 40
+GRID_POS = (SCREEN_WIDTH - 4 * GRID_ITEM_SIZE, GRID_ITEM_SIZE)
 
 def dist(x1, y1, x2, y2):
     return ((x1 - x2)**2 + (y1 - y2)**2)**.5
@@ -29,8 +35,7 @@ class MyGame(arcade.Window):
         self.person = Person(100, 100)
         self.person.travel_to(500, 800)
 
-        self.held_item = None
-        self.items = [Item(1500, 200)]
+        self.init_items()
 
     def on_draw(self):
         """ Render the screen. """
@@ -45,6 +50,22 @@ class MyGame(arcade.Window):
         for item in self.items: item.update(delta)
         if self.held_item is not None:
             self.held_item.move(self.mouse_x, self.mouse_y)
+
+    def init_items(self):
+        """ Create a 3x4 grid of items """
+        self.held_item = None
+        self.items = []
+
+        for r in range(3):
+            for c in range(4):
+                ox, oy = GRID_POS
+                rangle = math.pi * 2 * random.random()
+                rlength = GRID_ITEM_RAND_MAX_OFFSET * random.random()**.3
+                rx, ry = math.cos(rangle) * rlength, math.sin(rangle) * rlength
+                self.items.append(
+                    Item(ox + rx + GRID_ITEM_SIZE * c,
+                         oy + ry + GRID_ITEM_SIZE * r)
+                )
 
     def on_mouse_press(self, x, y, button, _modifiers):
         """ Handle mouse press """
