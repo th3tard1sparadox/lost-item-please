@@ -6,7 +6,7 @@ class Item():
 
     SCALE = .35
 
-    def __init__(self, x, y):
+    def __init__(self, x, y, name):
         self.x = x
         self.y = y
         self.orig_x = x
@@ -14,7 +14,7 @@ class Item():
 
         self.rotation = 0
 
-        self.name = random.choice(list(assets.items))
+        self.name = name
         self.texture = assets.items[self.name]
 
     def update(self, delta):
@@ -27,3 +27,9 @@ class Item():
     def move(self, x, y):
         self.x = x
         self.y = y
+
+    def play_sound(self):
+        if f"item_{self.name}" in assets.sounds:
+            return arcade.play_sound(assets.sounds[f"item_{self.name}"])
+        else:
+            return arcade.play_sound(assets.sounds["silence"])

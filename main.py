@@ -1,6 +1,7 @@
 import math
 import arcade
 import random
+import assets
 
 from enum import Enum
 from person import Person
@@ -83,6 +84,11 @@ class MyGame(arcade.Window):
         elif self.person.state == State.INTRO:
             if not is_playing(self.sound_player):
                 self.sound_player = self.person.play_sound("intro")
+                self.person.set_state(State.DESCRIBE)
+
+        elif self.person.state == State.DESCRIBE:
+            if not is_playing(self.sound_player):
+                self.sound_player = self.person.wanted_item.play_sound()
                 self.person.set_state(State.WAITING)
 
         elif self.person.state in [State.AWAY_RIGHT, State.AWAY_WRONG]:
@@ -102,6 +108,7 @@ class MyGame(arcade.Window):
         """ Create a 3x4 grid of items """
         self.held_item = None
         self.items = []
+        available_items = random.sample(list(assets.items), 12)
 
         for r in range(3):
             for c in range(4):
@@ -111,7 +118,8 @@ class MyGame(arcade.Window):
                 rx, ry = math.cos(rangle) * rlength, math.sin(rangle) * rlength
                 self.items.append(
                     Item(ox + rx + GRID_ITEM_SIZE * c,
-                         oy + ry + GRID_ITEM_SIZE * r)
+                         oy + ry + GRID_ITEM_SIZE * r,
+                         available_items.pop())
                 )
 
     def init_person(self):
