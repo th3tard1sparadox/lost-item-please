@@ -35,5 +35,7 @@ class IdCard():
 
 
     def draw(self):
-        pass
-        #arcade.draw_text("Name", 10, 10, arcade.color.BLACK, 10, 10, "Align") 
+        arcade.draw_text("Name", 10, 10, arcade.color.BLACK)
+
+    def is_valid(self):
+        return self.false_id

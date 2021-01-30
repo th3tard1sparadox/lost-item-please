@@ -57,6 +57,7 @@ class MyGame(arcade.Window):
         """ Set up the game here. Call this function to restart the game. """
         self.init_items()
         self.init_person()
+        self.init_idcard()
         self.state = State.CHOOSING
         self.sound_player = None
 
@@ -95,7 +96,7 @@ class MyGame(arcade.Window):
         elif self.person.state in [State.AWAY_RIGHT, State.AWAY_WRONG]:
             if not is_playing(self.sound_player):
                 if self.person.state == State.AWAY_RIGHT:
-                    sound = "right" 
+                    sound = "right"
                 else:
                     sound = "wrong"
                 self.sound_player = self.person.play_sound(sound)

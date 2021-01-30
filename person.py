@@ -123,7 +123,7 @@ class Person():
             return arcade.play_sound(assets.sounds[f"{self.name}_{sound}"])
         else:
             p = arcade.play_sound(assets.sounds["silence"])
-            arcade.stop_sound(p)
+            p.pause()
             return p
 
     def pick_item(self, items):
