@@ -28,12 +28,15 @@ class Person():
         self.is_traveling = False
 
         self.name = random.choice(list(assets.persons))
+        self.name = "yehaw" # TEMPORARY
         self.texture = assets.persons[self.name]
 
         self.held_item = None
         self.item_d = None
         self.item_r = None
         self.item_or = None
+
+        self.state = None
 
     def update(self, delta):
         if not self.is_traveling:
@@ -109,3 +112,12 @@ class Person():
         # Offset the rotation in case of spinning
         self.item_r -= math.radians(self.rotation)
         self.item_or = -math.radians(self.rotation)
+
+    def set_state(self, state):
+        self.state = state
+
+    def play_sound(self, sound):
+        if f"{self.name}_{sound}" in assets.sounds:
+            return arcade.play_sound(assets.sounds[f"{self.name}_{sound}"])
+        else:
+            return arcade.play_sound(assets.sounds["silence"])

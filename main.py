@@ -23,8 +23,16 @@ def dist(x1, y1, x2, y2):
     return ((x1 - x2)**2 + (y1 - y2)**2)**.5
 
 class State(Enum):
-    CHOOSING = 1
-    ITEM_PLACED = 2
+    # Game states
+    CHOOSING        = 0
+    ITEM_PLACED     = 1
+
+    # Person states
+    ENTER           = 10
+    INTRO           = 11
+    DESCRIBE        = 12
+    WAITING         = 13
+    AWAY            = 14
 
 class MyGame(arcade.Window):
     """
@@ -43,6 +51,7 @@ class MyGame(arcade.Window):
         self.init_items()
         self.init_person()
         self.state = State.CHOOSING
+        self.sound_player = None
 
     def on_draw(self):
         """ Render the screen. """
@@ -58,9 +67,19 @@ class MyGame(arcade.Window):
         if self.held_item is not None:
             self.held_item.move(self.mouse_x, self.mouse_y)
 
+
         if self.state == State.ITEM_PLACED and not self.person.is_traveling:
             self.state = State.CHOOSING
             self.init_person()
+
+
+        if self.person.state == State.ENTER and not self.person.is_traveling:
+            self.person.set_state(State.INTRO)
+
+        elif self.person.state == State.INTRO:
+            if self.sound_player is None or not self.sound_player.playing:
+                self.sound_player = self.person.play_sound("intro")
+                self.person.set_state(State.WAITING)
 
     def init_items(self):
         """ Create a 3x4 grid of items """
@@ -82,6 +101,7 @@ class MyGame(arcade.Window):
         """ Create a person that travels to its position """
         self.person = Person(100, 100)
         self.person.travel_to(500, 800)
+        self.person.set_state(State.ENTER)
 
     def on_mouse_press(self, x, y, button, _modifiers):
         """ Handle mouse press """
@@ -109,6 +129,7 @@ class MyGame(arcade.Window):
                    self.state = State.ITEM_PLACED
                    self.items.remove(self.held_item)
                    self.person.give_item(self.held_item)
+                   self.person.set_state(State.AWAY)
 
             self.held_item.x = self.held_item.orig_x
             self.held_item.y = self.held_item.orig_y
