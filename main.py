@@ -222,8 +222,8 @@ class MyGame(arcade.Window):
 
     def init_person(self):
         """ Create a person that travels to its position """
-        self.person = Person(100, 100)
-        self.person.travel_to(500, 800)
+        self.person = Person(0, SCREEN_HEIGHT + IMAGE_SIZE)
+        self.person.travel_to(500, 800, spin=False)
         self.person.set_state(State.ENTER)
         self.person.pick_item(self.items)
         self.note.set_item(self.person.wanted_item.name)
@@ -267,7 +267,7 @@ class MyGame(arcade.Window):
 
         if dist(self.button.x, self.button.y, x, y) < 70 * Button.SCALE:
             if self.state == State.CHOOSING:
-               new_x = self.person.x - IMAGE_SIZE
+               new_x = self.person.x - 1.5 * IMAGE_SIZE
                self.person.set_state(State.AWAY_WRONG)
                self.person.travel_to(new_x, SCREEN_HEIGHT + IMAGE_SIZE)
                self.transition(State.CHOICE_MADE)
@@ -282,10 +282,10 @@ class MyGame(arcade.Window):
             if self.state == State.CHOOSING \
                and dist(x, y, self.person.x, self.person.y) < ITEM_PLACE_RANGE:
                if self.person.wanted_item.name == self.held_item.name:
-                   new_x = self.person.x + IMAGE_SIZE
+                   new_x = self.person.x + 1.5 * IMAGE_SIZE
                    self.person.set_state(State.AWAY_RIGHT)
                else:
-                   new_x = self.person.x - IMAGE_SIZE
+                   new_x = self.person.x - 1.5 * IMAGE_SIZE
                    self.person.set_state(State.AWAY_WRONG)
 
                self.person.travel_to(new_x, SCREEN_HEIGHT + IMAGE_SIZE)

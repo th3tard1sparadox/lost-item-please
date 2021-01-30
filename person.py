@@ -20,6 +20,7 @@ class Person():
         self.y = y
         self.vy = 0
 
+        self.spin = False
         self.rotation = r
         self.vr = 0
 
@@ -74,7 +75,8 @@ class Person():
 
         self.x += delta * self.vx
         self.y += delta * self.vy
-        self.rotation += delta * self.vr
+        if self.spin:
+            self.rotation += delta * self.vr
 
     def draw(self):
         arcade.draw_scaled_texture_rectangle(
@@ -96,8 +98,9 @@ class Person():
             )
 
 
-    def travel_to(self, x, y):
+    def travel_to(self, x, y, spin=True):
         self.is_traveling = True
+        self.spin = spin
         self.goal_x = x
         self.goal_y = y
         self.vx = 0
