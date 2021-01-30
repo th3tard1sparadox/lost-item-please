@@ -29,3 +29,4 @@ for line in lines:
     descriptions[split_line[0]] = split_line[1]
 
 clock_image = arcade.load_texture("res/image/clock.png")
+note_image = arcade.load_texture("res/image/note.png")

@@ -8,6 +8,7 @@ from person import Person
 from item import Item
 from button import Button
 from clock import Clock
+from note import Note
 
 # Constants
 SCREEN_WIDTH = 1920
@@ -22,9 +23,11 @@ GRID_POS = (SCREEN_WIDTH - 4 * GRID_ITEM_SIZE, GRID_ITEM_SIZE)
 
 ITEM_PLACE_RANGE = (IMAGE_SIZE + GRID_ITEM_SIZE) / 2 / 1.7
 
-BUTTON_POS = (GRID_POS[0] - IMAGE_SIZE, IMAGE_SIZE / 2)
+BUTTON_POS = (950, 200)
 
-CLOCK_POS = (300, 100)
+CLOCK_POS = (950, 400)
+
+NOTE_POS = (400, 300)
 
 def dist(x1, y1, x2, y2):
     return ((x1 - x2)**2 + (y1 - y2)**2)**.5
@@ -60,12 +63,13 @@ class MyGame(arcade.Window):
 
     def setup(self):
         """ Set up the game here. Call this function to restart the game. """
+        self.note = Note(*NOTE_POS)
+        self.button = Button(*BUTTON_POS)
+        self.clock = Clock(*CLOCK_POS)
         self.init_items()
         self.init_person()
         self.state = State.CHOOSING
         self.sound_player = None
-        self.button = Button(*BUTTON_POS)
-        self.clock = Clock(*CLOCK_POS)
 
         self.set_fullscreen(True)
 
@@ -76,7 +80,8 @@ class MyGame(arcade.Window):
         self.person.draw()
         self.button.draw()
         self.clock.draw()
-        for item in self.items: item.draw()
+        self.note.draw()
+        for item in reversed(self.items): item.draw()
 
     def on_update(self, delta):
         """ Game logic """
@@ -141,6 +146,7 @@ class MyGame(arcade.Window):
         self.person.travel_to(500, 800)
         self.person.set_state(State.ENTER)
         self.person.pick_item(self.items)
+        self.note.set_text(assets.descriptions[self.person.wanted_item.name])
 
     def on_mouse_press(self, x, y, button, _modifiers):
         """ Handle mouse press """

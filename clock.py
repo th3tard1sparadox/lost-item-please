@@ -31,11 +31,13 @@ class Clock():
         arcade.draw_text(
             "{:02}:{:02}".format(8 + int(self.time / Clock.DAY_TIME * Clock.HOURS),
                                  int(self.time / Clock.DAY_TIME * Clock.HOURS * 60 // 30 * 30) % 60),
-            self.x - 75,
-            self.y - 31,
+            self.x,
+            self.y,
             arcade.color.RED,
             40,
             align="center",
+            anchor_x="center",
+            anchor_y="center",
             font_name="res/font/DIGITALDREAMNARROW.ttf"
         )
 
