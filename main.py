@@ -63,6 +63,8 @@ class MyGame(arcade.Window):
         self.sound_player = None
         self.button = Button(*BUTTON_POS)
 
+        self.set_fullscreen(True)
+
     def on_draw(self):
         """ Render the screen. """
 
@@ -190,6 +192,8 @@ class MyGame(arcade.Window):
             self.set_fullscreen(not self.fullscreen)
             width, height = self.get_size()
             self.set_viewport(0, width, 0, height)
+        if key in [arcade.key.ESCAPE, arcade.key.Q]:
+            exit()
 
 def main():
     """ Main method """
