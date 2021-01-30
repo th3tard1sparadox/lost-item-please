@@ -66,6 +66,7 @@ class MyGame(arcade.Window):
 
         arcade.start_render()
         self.person.draw()
+        self.id_card.draw()
         for item in self.items: item.draw()
 
     def on_update(self, delta):
@@ -103,8 +104,12 @@ class MyGame(arcade.Window):
                 self.person.set_state(State.EXIT)
 
         elif self.person.state == State.EXIT and not self.person.is_traveling:
-            self.init_person()
 
+            if self.id_card.is_false():
+                print(self.id_card.invalidity_reason())
+
+            self.init_person()
+            self.init_idcard()
 
     def init_items(self):
         """ Create a 3x4 grid of items """
@@ -133,7 +138,11 @@ class MyGame(arcade.Window):
 
 
     def init_idcard(self):
-        self.idcard = IdCard(self.person, "2020-01-21", random.choices([True, False],[70,30]))
+        """
+        Inits the id card of the current person with a 30% chance of the
+        card being false.
+        """
+        self.id_card = IdCard(self.person, random.choices([True, False],[30,70]))
 
 
     def on_mouse_press(self, x, y, button, _modifiers):
