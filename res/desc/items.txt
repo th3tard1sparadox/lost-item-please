@@ -1,0 +1,20 @@
+baby: I want the child.
+balloon_alpha: I've lost my alpha balloon.
+balloon_blue: I've lost my blue balloon.
+balloon_green: I've lost my green balloon.
+balloon_red: I've lost my red balloon.
+book: Help, I've lost my book.
+cat: My orange cat is lost, do you have it?
+computer: Someone stole my computer!
+eyeball: Argh! Someone's gotten to my eye mat(eye).
+ferris: My beutiful crab is gone! How can I write Rust now?
+gauntlet: The gauntlet, it is mine.
+knife: Ehm, I believe that knife belongs to me.
+pen: My pen's here somewhere.
+tea: Pardon me, should you have happened upon my tea?
+code: Them darn kids been stealing my code again!
+keys: The keys I have lost.
+toycar: Any cybertrucks around?
+bone: Woof, bone, woof.
+gold_ring: Aw yeah, the ring that I lost. Cool dudee!
+spongeboy: I'm looking for a yellow spongey dude.
