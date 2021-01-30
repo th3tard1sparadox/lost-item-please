@@ -6,6 +6,7 @@ import assets
 from enum import Enum
 from person import Person
 from item import Item
+from id_card import IdCard
 
 # Constants
 SCREEN_WIDTH = 1920
@@ -128,6 +129,11 @@ class MyGame(arcade.Window):
         self.person.travel_to(500, 800)
         self.person.set_state(State.ENTER)
         self.person.pick_item(self.items)
+
+
+    def init_idcard(self):
+        self.idcard = IdCard(self.person, "2020-01-21", random.choices([True, False],[70,30]))
+
 
     def on_mouse_press(self, x, y, button, _modifiers):
         """ Handle mouse press """
