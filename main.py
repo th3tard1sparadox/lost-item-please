@@ -40,8 +40,12 @@ def is_playing(player):
 
 class State(Enum):
     # Game states
-    CHOOSING        = 0
-    CHOICE_MADE     = 1
+    DAY_INTRO       = 0
+    DAY_FADE_IN     = 1
+    DAY_FADE_OUT    = 2
+    CHOOSING        = 3
+    CHOICE_MADE     = 4
+
 
     # Person states
     ENTER           = 10
@@ -67,14 +71,15 @@ class MyGame(arcade.Window):
     def setup(self):
         """ Set up the game here. Call this function to restart the game. """
         self.note = Note(*NOTE_POS)
-        self.note.day = 1
         self.button = Button(*BUTTON_POS)
         self.clock = Clock(*CLOCK_POS)
         self.init_items()
         self.init_person()
         self.init_idcard()
-        self.state = State.CHOOSING
+        self.state = State.DAY_INTRO
+        self.state_time = 0
         self.sound_player = None
+        self.day = 1
 
         self.set_fullscreen(True)
 
@@ -95,8 +100,62 @@ class MyGame(arcade.Window):
         self.note.draw()
         for item in reversed(self.items): item.draw()
 
+        if self.state == State.DAY_FADE_IN:
+            arcade.draw_rectangle_filled(
+                SCREEN_WIDTH / 2,
+                SCREEN_HEIGHT / 2,
+                SCREEN_WIDTH,
+                SCREEN_HEIGHT,
+                (0, 0, 0, max(int((1 - self.state_time) * 255), 0))
+            )
+        elif self.state == State.DAY_FADE_OUT:
+            arcade.draw_rectangle_filled(
+                SCREEN_WIDTH / 2,
+                SCREEN_HEIGHT / 2,
+                SCREEN_WIDTH,
+                SCREEN_HEIGHT,
+                (0, 0, 0, max(int(self.state_time * 255), 0))
+            )
+        elif self.state == State.DAY_INTRO:
+            arcade.draw_rectangle_filled(
+                SCREEN_WIDTH / 2,
+                SCREEN_HEIGHT / 2,
+                SCREEN_WIDTH,
+                SCREEN_HEIGHT,
+                arcade.color.BLACK
+            )
+            if self.state_time < 4:
+                color = (min(int(self.state_time * 255), 255),) * 3
+            else:
+                color = (min(int((5 - self.state_time) * 255), 255),) * 3
+            arcade.draw_text(
+                f"Day {['one', 'two', 'three'][self.day-1]}",
+                SCREEN_WIDTH / 2,
+                SCREEN_HEIGHT / 2,
+                color,
+                48,
+                align="center",
+                anchor_x="center",
+                anchor_y="center"
+            )
+
     def on_update(self, delta):
         """ Game logic """
+        self.state_time += delta
+
+        if self.state == State.DAY_FADE_IN:
+            if self.state_time > 1:
+                self.transition(State.CHOOSING)
+        elif self.state == State.DAY_FADE_OUT:
+            if self.state_time > 1:
+                self.transition(State.DAY_INTRO)
+                self.advance_day()
+            return
+        elif self.state == State.DAY_INTRO:
+            if self.state_time > 5:
+                self.transition(State.DAY_FADE_IN)
+            return
+
         self.person.update(delta)
         self.clock.update(delta)
         for item in self.items: item.update(delta)
@@ -105,7 +164,7 @@ class MyGame(arcade.Window):
 
 
         if self.state == State.CHOICE_MADE and not self.person.is_traveling:
-            self.state = State.CHOOSING
+            self.transition(State.CHOOSING)
 
 
         if self.person.state == State.ENTER and not self.person.is_traveling:
@@ -131,6 +190,11 @@ class MyGame(arcade.Window):
                 self.person.set_state(State.EXIT)
 
         elif self.person.state == State.EXIT and not self.person.is_traveling:
+
+            if self.clock.is_completed():
+                self.transition(State.DAY_FADE_OUT)
+                self.person.state = State.WAITING
+                return
 
             if self.id_card.is_false():
                 print(self.id_card.invalidity_reason())
@@ -173,6 +237,20 @@ class MyGame(arcade.Window):
 
         self.id_card = IdCard(self.person, True if random.randint(0,100) < 30 else False)
 
+    def transition(self, state):
+        """ Changes state """
+        self.state = state
+        self.state_time = 0
+
+    def advance_day(self):
+        """ Move to the next day """
+        self.day = (self.day % 3) + 1
+        self.note.day = self.day
+        self.clock.time = 0
+        self.init_items()
+        self.init_person()
+        self.init_idcard()
+
 
     def on_mouse_press(self, x, y, button, _modifiers):
         """ Handle mouse press """
@@ -192,7 +270,7 @@ class MyGame(arcade.Window):
                new_x = self.person.x - IMAGE_SIZE
                self.person.set_state(State.AWAY_WRONG)
                self.person.travel_to(new_x, SCREEN_HEIGHT + IMAGE_SIZE)
-               self.state = State.CHOICE_MADE
+               self.transition(State.CHOICE_MADE)
 
 
     def on_mouse_release(self, x, y, button, _modifiers):
@@ -203,17 +281,17 @@ class MyGame(arcade.Window):
         if self.held_item is not None:
             if self.state == State.CHOOSING \
                and dist(x, y, self.person.x, self.person.y) < ITEM_PLACE_RANGE:
-                   if self.person.wanted_item.name == self.held_item.name:
-                       new_x = self.person.x + IMAGE_SIZE
-                       self.person.set_state(State.AWAY_RIGHT)
-                   else:
-                       new_x = self.person.x - IMAGE_SIZE
-                       self.person.set_state(State.AWAY_WRONG)
+               if self.person.wanted_item.name == self.held_item.name:
+                   new_x = self.person.x + IMAGE_SIZE
+                   self.person.set_state(State.AWAY_RIGHT)
+               else:
+                   new_x = self.person.x - IMAGE_SIZE
+                   self.person.set_state(State.AWAY_WRONG)
 
-                   self.person.travel_to(new_x, SCREEN_HEIGHT + IMAGE_SIZE)
-                   self.state = State.CHOICE_MADE
-                   self.items.remove(self.held_item)
-                   self.person.give_item(self.held_item)
+               self.person.travel_to(new_x, SCREEN_HEIGHT + IMAGE_SIZE)
+               self.transition(State.CHOICE_MADE)
+               self.items.remove(self.held_item)
+               self.person.give_item(self.held_item)
 
             self.held_item.x = self.held_item.orig_x
             self.held_item.y = self.held_item.orig_y
