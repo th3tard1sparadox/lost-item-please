@@ -27,3 +27,5 @@ with open(DESC_DIR + "items.txt", 'r') as file:
 for line in lines:
     split_line = line.split(': ')
     descriptions[split_line[0]] = split_line[1]
+
+clock_image = arcade.load_texture("res/image/clock.png")
