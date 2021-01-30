@@ -130,4 +130,4 @@ class Person():
         if items:
             self.wanted_item = random.choice(items)
         else:
-            self.wanted_item = Item(0, 0, "")
+            self.wanted_item = Item(0, 0, "baby")
