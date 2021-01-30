@@ -57,7 +57,7 @@ class IdCard():
 
         arcade.draw_scaled_texture_rectangle(self.x, self.y, self.id_texture, 1)
         arcade.draw_scaled_texture_rectangle(self.x-235, self.y+75, self.texture, 0.4)
-        arcade.draw_text("Name: " + self.name,
+        arcade.draw_text("Name: " + self.name.capitalize(),
                          self.x + self.x_to,
                          self.y + self.y_tos,
                          arcade.color.BLACK, 20)
