@@ -238,7 +238,6 @@ class MyGame(arcade.Window):
         Inits the id card of the current person with a 30% chance of the
         card being false.
         """
-
         self.id_card = IdCard(self.person, True if random.randint(0,100) < 30 else False)
 
     def transition(self, state):

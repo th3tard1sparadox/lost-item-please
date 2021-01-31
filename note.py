@@ -126,7 +126,7 @@ class Note():
         """ Make sure all fields are correct before calling this function """
         self.date = Note.TODAY
 
-        self.is_fake = random.random() < .5
+        self.is_fake = random.random() < .5 and self.day == 3
         if self.is_fake:
             self.fake_type = ["Card", "Name", "Item", "Date"][random.randint(0, 3)]
             if self.fake_type == "Name":
