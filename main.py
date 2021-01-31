@@ -2,6 +2,7 @@ import math
 import arcade
 import random
 import assets
+import pyglet
 
 from enum import Enum
 from person import Person
@@ -94,6 +95,7 @@ class MyGame(arcade.Window):
             self.sound_player = None
             arcade.play_sound(assets.sounds['elevator_music'], volume=0.03, looping=True)
             self.set_fullscreen(True)
+            self.set_icon(pyglet.image.load("res/image/icon.png"))
 
     def on_draw(self):
         """ Render the screen. """
