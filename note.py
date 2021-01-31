@@ -78,7 +78,7 @@ class Note():
                 arcade.color.BLACK,
                 22,
                 align="center", anchor_x="center", anchor_y="center",
-                font_name="res/font/Note_this.ttf",
+                font_name="res/font/Hand_Power.ttf",
                 rotation=5
             )
             item = self.item.replace("_", " ")
@@ -91,7 +91,7 @@ class Note():
                 arcade.color.BLACK,
                 32,
                 align="center", anchor_x="center", anchor_y="center",
-                font_name="res/font/Note_this.ttf",
+                font_name="res/font/Hand_Power.ttf",
                 rotation=5
             )
             arcade.draw_text(
@@ -101,7 +101,7 @@ class Note():
                 arcade.color.BLACK,
                 28,
                 align="center", anchor_x="center", anchor_y="center",
-                font_name="res/font/Note_this.ttf",
+                font_name="res/font/Hand_Power.ttf",
                 rotation=7
             )
 
