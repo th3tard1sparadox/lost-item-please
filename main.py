@@ -80,7 +80,7 @@ class MyGame(arcade.Window):
         self.state_time = 0
         self.sound_player = None
         self.day = 1
-        arcade.play_sound(assets.sounds['elevator_music'], volume=0.1, looping=True)
+        arcade.play_sound(assets.sounds['elevator_music'], volume=0.03, looping=True)
         self.note.day = 3
 
         self.set_fullscreen(True)
