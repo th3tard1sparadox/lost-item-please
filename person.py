@@ -29,7 +29,6 @@ class Person():
         self.is_traveling = False
 
         self.name = random.choice(list(assets.persons))
-        # self.name = "yehaw" # TEMPORARY
         self.texture = assets.persons[self.name]
 
         self.held_item = None
