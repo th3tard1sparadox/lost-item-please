@@ -39,7 +39,12 @@ class IdCard():
                                        "Goteborg","Linkoping",
                                        "Norrkoping","Koping"])
 
-        self.gender = random.choice(["Boi","Grill","Microwave","Wolf", "Lost soul of the underworld"])
+
+        self.gender = random.choice(["Boi","Grill",
+                                     "Microwave","Wolf",
+                                     "Attack Helicopter", "Mayonnaise",
+                                     "Gopnik", "Stockholmare",
+                                     "Lost soul of the underworld"])
 
         if false_id:
             self.incorrect_elem = random.randint(0,5)
@@ -143,4 +148,8 @@ class IdCard():
         elif self.incorrect_elem == 5:
             self.iss_city = random.choice(["Mordor","Camelot",
                                            "Caladan","Giedi Prime",
-                                           "Hell","Demacia"])
+                                           "Hell","Demacia", "Vogsphere",
+                                           "Tenochtitlan", "Alderaan",
+                                           "Winterfell", "Hogwarts",
+                                           "Ankh-Morpork", "Ogion",
+                                           "Miraz's Castle"])
