@@ -81,6 +81,7 @@ class MyGame(arcade.Window):
         self.sound_player = None
         self.day = 1
         arcade.play_sound(assets.sounds['elevator_music'], volume=0.1, looping=True)
+        self.note.day = 3
 
         self.set_fullscreen(True)
 
@@ -228,6 +229,8 @@ class MyGame(arcade.Window):
         self.person.set_state(State.ENTER)
         self.person.pick_item(self.items)
         self.note.set_item(self.person.wanted_item.name)
+        self.note.set_person_name(self.person.name)
+        self.note.randomize_fake()
 
 
     def init_idcard(self):
