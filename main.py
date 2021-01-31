@@ -11,6 +11,7 @@ from id_card import IdCard
 from button import Button
 from clock import Clock
 from note import Note
+from strikes import Strikes
 
 
 # Constants
@@ -29,6 +30,8 @@ ITEM_PLACE_RANGE = (IMAGE_SIZE + GRID_ITEM_SIZE) / 2 / 1.7
 BUTTON_POS = (915, 195)
 
 CLOCK_POS = (910, 400)
+
+STRIKES_POS = (915, 68)
 
 NOTE_POS = (400, 300)
 
@@ -73,6 +76,7 @@ class MyGame(arcade.Window):
         self.note = Note(*NOTE_POS)
         self.button = Button(*BUTTON_POS)
         self.clock = Clock(*CLOCK_POS)
+        self.strikes = Strikes(*STRIKES_POS)
         self.init_items()
         self.init_person()
         self.init_idcard()
@@ -100,6 +104,7 @@ class MyGame(arcade.Window):
         self.button.draw()
         self.clock.draw()
         self.note.draw()
+        self.strikes.draw()
         for item in reversed(self.items): item.draw()
 
         if self.state == State.DAY_FADE_IN:
@@ -274,6 +279,9 @@ class MyGame(arcade.Window):
                self.person.set_state(State.AWAY_WRONG)
                self.person.travel_to(new_x, SCREEN_HEIGHT + IMAGE_SIZE)
                self.transition(State.CHOICE_MADE)
+               if not self.note.is_fake and not self.id_card.is_false():
+                   print(self.note.is_fake, flush=True)
+                   self.strikes.strikes += 1
 
 
     def on_mouse_release(self, x, y, button, _modifiers):
@@ -287,9 +295,12 @@ class MyGame(arcade.Window):
                if self.person.wanted_item.name == self.held_item.name:
                    new_x = self.person.x + 1.5 * IMAGE_SIZE
                    self.person.set_state(State.AWAY_RIGHT)
+                   if self.note.is_fake or self.id_card.is_false():
+                       self.strikes.strikes += 1
                else:
                    new_x = self.person.x - 1.5 * IMAGE_SIZE
                    self.person.set_state(State.AWAY_WRONG)
+                   self.strikes.strikes += 1
 
                self.person.travel_to(new_x, SCREEN_HEIGHT + IMAGE_SIZE)
                self.transition(State.CHOICE_MADE)

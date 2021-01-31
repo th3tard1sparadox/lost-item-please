@@ -145,3 +145,5 @@ class Note():
                     random.randint(1, 12),
                     random.randint(1, 28)
                 )
+        else:
+            self.fake_type = None
