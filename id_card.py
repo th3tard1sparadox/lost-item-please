@@ -60,23 +60,28 @@ class IdCard():
         arcade.draw_text("Name: " + self.name.capitalize(),
                          self.x + self.x_to,
                          self.y + self.y_tos,
-                         arcade.color.BLACK, 20)
+                         arcade.color.BLACK, 20,
+                         font_name="res/font/Hand_Power.ttf")
         arcade.draw_text("Birthday: " + self.birthdate,
                          self.x + self.x_to,
                          self.y + self.y_tos -70,
-                         arcade.color.BLACK, 20)
+                         arcade.color.BLACK, 20,
+                         font_name="res/font/Hand_Power.ttf")
         arcade.draw_text("Expiration Date: " + self.exp_date,
                          self.x + self.x_to,
                          self.y + self.y_tos -155,
-                         arcade.color.BLACK, 20)
+                         arcade.color.BLACK, 20,
+                         font_name="res/font/Hand_Power.ttf")
         arcade.draw_text("Issuing City: " + self.iss_city,
                          self.x + self.x_to,
                          self.y + self.y_tos -235,
-                         arcade.color.BLACK, 20)
+                         arcade.color.BLACK, 20,
+                         font_name="res/font/Hand_Power.ttf")
         arcade.draw_text("Gender: " + self.gender,
                          self.x + self.x_to,
                          self.y + self.y_tos -310,
-                         arcade.color.BLACK, 20)
+                         arcade.color.BLACK, 20,
+                         font_name="res/font/Hand_Power.ttf")
 
 
     def is_false(self):

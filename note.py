@@ -34,7 +34,7 @@ class Note():
                 align="center",
                 anchor_x="center",
                 anchor_y="center",
-                font_name="res/font/Note_this.ttf"
+                font_name="res/font/Billys_Hand_Thin.ttf"
             )
         elif self.day == 2:
             arcade.draw_scaled_texture_rectangle(
