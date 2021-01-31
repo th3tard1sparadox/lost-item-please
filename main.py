@@ -287,9 +287,6 @@ class MyGame(arcade.Window):
                 self.person.state = State.WAITING
                 return
 
-            if self.id_card.is_false():
-                print(self.id_card.invalidity_reason())
-
             self.init_person()
             self.init_idcard()
 

@@ -97,7 +97,6 @@ class IdCard():
         """
 
         if self.incorrect_elem != None:
-            print(self.incorrect_elem)
             reasons = ["Incorrect Watermark", "incorrect Image",
                        "Incorrect Name", "Incorrect Birthdate",
                        "Incorrect Expiration Date", "Incorrect Issuing City"]
