@@ -50,6 +50,9 @@ class State(Enum):
     CHOICE_MADE     = 4
     END_FADE_OUT    = 5
     END_SCREEN      = 6
+    START_SCREEN    = 7
+    START_FADE_OUT  = 8
+    START_FADE_IN   = 9
 
     # Person states
     ENTER           = 10
@@ -81,10 +84,11 @@ class MyGame(arcade.Window):
         self.init_items()
         self.init_person()
         self.init_idcard()
-        self.state = State.DAY_INTRO
+        self.state = State.START_FADE_IN
         self.state_time = 0
         self.day = 1
         self.score = 0
+        self.guide_visible = False
 
         if not restart:
             self.sound_player = None
@@ -95,6 +99,42 @@ class MyGame(arcade.Window):
         """ Render the screen. """
 
         arcade.start_render()
+
+        if self.state in [State.START_SCREEN, State.START_FADE_OUT, State.START_FADE_IN]:
+            arcade.draw_scaled_texture_rectangle(SCREEN_WIDTH / 2,
+                                                 SCREEN_HEIGHT / 2,
+                                                 assets.intro_image,
+                                                 1,
+                                                 0)
+            if self.guide_visible:
+                arcade.draw_scaled_texture_rectangle(SCREEN_WIDTH / 2,
+                                                     SCREEN_HEIGHT / 2,
+                                                     assets.guide_image,
+                                                     1,
+                                                     0)
+                arcade.draw_scaled_texture_rectangle(SCREEN_WIDTH - 200,
+                                                     100,
+                                                     assets.close_image,
+                                                     .5,
+                                                     0)
+            if self.state == State.START_FADE_OUT:
+                arcade.draw_rectangle_filled(
+                    SCREEN_WIDTH / 2,
+                    SCREEN_HEIGHT / 2,
+                    SCREEN_WIDTH,
+                    SCREEN_HEIGHT,
+                    (0, 0, 0, max(int(self.state_time * 255), 0))
+                )
+            elif self.state == State.START_FADE_IN:
+                arcade.draw_rectangle_filled(
+                    SCREEN_WIDTH / 2,
+                    SCREEN_HEIGHT / 2,
+                    SCREEN_WIDTH,
+                    SCREEN_HEIGHT,
+                    (0, 0, 0, max(int((1 - self.state_time) * 255), 0))
+                )
+            return
+
         arcade.draw_scaled_texture_rectangle(SCREEN_WIDTH / 2,
                                              SCREEN_HEIGHT / 2,
                                              assets.bg_image,
@@ -178,11 +218,19 @@ class MyGame(arcade.Window):
         """ Game logic """
         self.state_time += delta
 
-        if self.state == State.END_SCREEN:
+        if self.state in [State.END_SCREEN, State.START_SCREEN]:
             return
         elif self.state == State.DAY_FADE_IN:
             if self.state_time > 1:
                 self.transition(State.CHOOSING)
+            return
+        elif self.state == State.START_FADE_IN:
+            if self.state_time > 1:
+                self.transition(State.START_SCREEN)
+            return
+        elif self.state == State.START_FADE_OUT:
+            if self.state_time > 1:
+                self.transition(State.DAY_INTRO)
         elif self.state == State.END_FADE_OUT:
             if self.state_time > 1:
                 self.transition(State.END_SCREEN)
@@ -323,6 +371,15 @@ class MyGame(arcade.Window):
                self.transition(State.CHOICE_MADE)
                if not self.note.is_fake and not self.id_card.is_false():
                    self.get_strike()
+
+        if self.state == State.START_SCREEN:
+            if self.guide_visible:
+                self.guide_visible = False
+            elif 350 < y and y < 600:
+                if 1030 < x and x < 1500:
+                    self.guide_visible = True
+                if 470 < x and x < 940:
+                    self.transition(State.START_FADE_OUT)
 
 
     def on_mouse_release(self, x, y, button, _modifiers):
