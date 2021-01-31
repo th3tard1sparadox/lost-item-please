@@ -48,7 +48,8 @@ class State(Enum):
     DAY_FADE_OUT    = 2
     CHOOSING        = 3
     CHOICE_MADE     = 4
-
+    END_FADE_OUT    = 5
+    END_SCREEN      = 6
 
     # Person states
     ENTER           = 10
@@ -71,7 +72,7 @@ class MyGame(arcade.Window):
 
         arcade.set_background_color(arcade.csscolor.CORNFLOWER_BLUE)
 
-    def setup(self):
+    def setup(self, restart=False):
         """ Set up the game here. Call this function to restart the game. """
         self.note = Note(*NOTE_POS)
         self.button = Button(*BUTTON_POS)
@@ -82,12 +83,13 @@ class MyGame(arcade.Window):
         self.init_idcard()
         self.state = State.DAY_INTRO
         self.state_time = 0
-        self.sound_player = None
         self.day = 1
-        arcade.play_sound(assets.sounds['elevator_music'], volume=0.03, looping=True)
-        self.note.day = 3
+        self.score = 0
 
-        self.set_fullscreen(True)
+        if not restart:
+            self.sound_player = None
+            arcade.play_sound(assets.sounds['elevator_music'], volume=0.03, looping=True)
+            self.set_fullscreen(True)
 
     def on_draw(self):
         """ Render the screen. """
@@ -98,10 +100,12 @@ class MyGame(arcade.Window):
                                              assets.bg_image,
                                              1,
                                              0)
+        self.button.draw()
+
+
         self.person.draw()
         self.id_card.draw()
 
-        self.button.draw()
         self.clock.draw()
         self.note.draw()
         self.strikes.draw()
@@ -115,7 +119,7 @@ class MyGame(arcade.Window):
                 SCREEN_HEIGHT,
                 (0, 0, 0, max(int((1 - self.state_time) * 255), 0))
             )
-        elif self.state == State.DAY_FADE_OUT:
+        elif self.state in [State.DAY_FADE_OUT, State.END_FADE_OUT]:
             arcade.draw_rectangle_filled(
                 SCREEN_WIDTH / 2,
                 SCREEN_HEIGHT / 2,
@@ -145,14 +149,43 @@ class MyGame(arcade.Window):
                 anchor_x="center",
                 anchor_y="center"
             )
+        elif self.state == State.END_SCREEN:
+            arcade.draw_rectangle_filled(
+                SCREEN_WIDTH / 2,
+                SCREEN_HEIGHT / 2,
+                SCREEN_WIDTH,
+                SCREEN_HEIGHT,
+                arcade.color.BLACK
+            )
+            text = f"You correctly returned {self.score} lost items."
+            if self.strikes.strikes == 3:
+                text = f"You have been fired for returning items wrongly.\n\n{text}"
+            text = f"{text}\n\n\n\nPress R to play again."
+            color = (min(int(self.state_time * 255), 255),) * 3
+            arcade.draw_text(
+                text,
+                SCREEN_WIDTH / 2,
+                SCREEN_HEIGHT / 2,
+                color,
+                48,
+                align="center",
+                anchor_x="center",
+                anchor_y="center"
+            )
+
 
     def on_update(self, delta):
         """ Game logic """
         self.state_time += delta
 
-        if self.state == State.DAY_FADE_IN:
+        if self.state == State.END_SCREEN:
+            return
+        elif self.state == State.DAY_FADE_IN:
             if self.state_time > 1:
                 self.transition(State.CHOOSING)
+        elif self.state == State.END_FADE_OUT:
+            if self.state_time > 1:
+                self.transition(State.END_SCREEN)
         elif self.state == State.DAY_FADE_OUT:
             if self.state_time > 1:
                 self.transition(State.DAY_INTRO)
@@ -172,6 +205,9 @@ class MyGame(arcade.Window):
 
         if self.state == State.CHOICE_MADE and not self.person.is_traveling:
             self.transition(State.CHOOSING)
+
+        if self.state == State.CHOOSING and self.strikes.strikes == 3:
+            self.transition(State.END_FADE_OUT)
 
 
         if self.person.state == State.ENTER and not self.person.is_traveling:
@@ -252,6 +288,8 @@ class MyGame(arcade.Window):
 
     def advance_day(self):
         """ Move to the next day """
+        if self.day == 3:
+            self.transition(State.END_SCREEN)
         self.day = (self.day % 3) + 1
         self.note.day = self.day
         self.clock.time = 0
@@ -259,6 +297,10 @@ class MyGame(arcade.Window):
         self.init_person()
         self.init_idcard()
 
+    def get_strike(self):
+        self.strikes.strikes += 1
+        if self.strikes.strikes == 3:
+            self.transition(State.END_FADE_OUT)
 
     def on_mouse_press(self, x, y, button, _modifiers):
         """ Handle mouse press """
@@ -280,8 +322,7 @@ class MyGame(arcade.Window):
                self.person.travel_to(new_x, SCREEN_HEIGHT + IMAGE_SIZE)
                self.transition(State.CHOICE_MADE)
                if not self.note.is_fake and not self.id_card.is_false():
-                   print(self.note.is_fake, flush=True)
-                   self.strikes.strikes += 1
+                   self.get_strike()
 
 
     def on_mouse_release(self, x, y, button, _modifiers):
@@ -292,20 +333,22 @@ class MyGame(arcade.Window):
         if self.held_item is not None:
             if self.state == State.CHOOSING \
                and dist(x, y, self.person.x, self.person.y) < ITEM_PLACE_RANGE:
-               if self.person.wanted_item.name == self.held_item.name:
-                   new_x = self.person.x + 1.5 * IMAGE_SIZE
-                   self.person.set_state(State.AWAY_RIGHT)
-                   if self.note.is_fake or self.id_card.is_false():
-                       self.strikes.strikes += 1
-               else:
-                   new_x = self.person.x - 1.5 * IMAGE_SIZE
-                   self.person.set_state(State.AWAY_WRONG)
-                   self.strikes.strikes += 1
+                self.transition(State.CHOICE_MADE)
+                if self.person.wanted_item.name == self.held_item.name:
+                    new_x = self.person.x + 1.5 * IMAGE_SIZE
+                    self.person.set_state(State.AWAY_RIGHT)
+                    if self.note.is_fake or self.id_card.is_false():
+                        self.get_strike()
+                    else:
+                        self.score += 1
+                else:
+                    new_x = self.person.x - 1.5 * IMAGE_SIZE
+                    self.person.set_state(State.AWAY_WRONG)
+                    self.get_strike()
 
-               self.person.travel_to(new_x, SCREEN_HEIGHT + IMAGE_SIZE)
-               self.transition(State.CHOICE_MADE)
-               self.items.remove(self.held_item)
-               self.person.give_item(self.held_item)
+                self.person.travel_to(new_x, SCREEN_HEIGHT + IMAGE_SIZE)
+                self.items.remove(self.held_item)
+                self.person.give_item(self.held_item)
 
             self.held_item.x = self.held_item.orig_x
             self.held_item.y = self.held_item.orig_y
@@ -322,8 +365,11 @@ class MyGame(arcade.Window):
             self.set_fullscreen(not self.fullscreen)
             width, height = self.get_size()
             self.set_viewport(0, width, 0, height)
-        if key in [arcade.key.ESCAPE, arcade.key.Q]:
+        elif key in [arcade.key.ESCAPE, arcade.key.Q]:
             exit()
+        elif key == arcade.key.R:
+            if self.state == State.END_SCREEN:
+                self.setup(restart=True)
 
 def main():
     """ Main method """
