@@ -28,8 +28,7 @@ class Clock():
             0
         )
         arcade.draw_text(
-            "{:02}:{:02}".format(8 + int(self.time / Clock.DAY_TIME * Clock.HOURS),
-                                 int(self.time / Clock.DAY_TIME * Clock.HOURS * 60 // 30 * 30) % 60),
+            self.time_as_str(),
             self.x,
             self.y,
             arcade.color.RED,
@@ -42,3 +41,7 @@ class Clock():
 
     def is_completed(self):
         return self.time > Clock.DAY_TIME
+
+    def time_as_str(self):
+        return "{:02}:{:02}".format(8 + int(self.time / Clock.DAY_TIME * Clock.HOURS),
+                                    int(self.time / Clock.DAY_TIME * Clock.HOURS * 60 // 30 * 30) % 60)
