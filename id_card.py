@@ -39,7 +39,7 @@ class IdCard():
                                        "Goteborg","Linkoping",
                                        "Norrkoping","Koping"])
 
-        self.gender = random.choice(["Boi","Grill","Microwave","Wolf"])
+        self.gender = random.choice(["Boi","Grill","Microwave","Wolf", "Lost soul of the underworld"])
 
         if false_id:
             self.incorrect_elem = random.randint(0,5)
