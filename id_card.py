@@ -44,7 +44,7 @@ class IdCard():
                                      "Microwave","Wolf",
                                      "Attack Helicopter", "Mayonnaise",
                                      "Gopnik", "Stockholmare",
-                                     "Lost soul of the underworld"])
+                                     "Lost soul"])
 
         if false_id:
             self.incorrect_elem = random.randint(0,5)

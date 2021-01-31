@@ -57,7 +57,7 @@ class Note():
                 self.x - 50,
                 self.y,
                 arcade.color.BLACK,
-                60,
+                55,
                 align="center",
                 anchor_x="center",
                 anchor_y="center",
