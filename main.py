@@ -343,7 +343,7 @@ class MyGame(arcade.Window):
         self.init_idcard()
 
     def get_strike(self):
-        arcade.play_sound(assets.sounds['strike'])
+        arcade.play_sound(assets.sounds['strike'], volume=0.1)
         self.strikes.strikes += 1
         if self.strikes.strikes == 3:
             self.transition(State.END_FADE_OUT)
