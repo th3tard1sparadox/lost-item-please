@@ -57,7 +57,7 @@ class Note():
                 self.x - 50,
                 self.y,
                 arcade.color.BLACK,
-                48,
+                60,
                 align="center",
                 anchor_x="center",
                 anchor_y="center",
@@ -89,7 +89,7 @@ class Note():
                 self.x,
                 self.y - 10,
                 arcade.color.BLACK,
-                32,
+                22,
                 align="center", anchor_x="center", anchor_y="center",
                 font_name="res/font/Hand_Power.ttf",
                 rotation=5
@@ -99,7 +99,7 @@ class Note():
                 self.x + 200,
                 self.y - 60,
                 arcade.color.BLACK,
-                28,
+                22,
                 align="center", anchor_x="center", anchor_y="center",
                 font_name="res/font/Hand_Power.ttf",
                 rotation=7
