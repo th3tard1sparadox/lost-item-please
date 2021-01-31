@@ -376,11 +376,14 @@ class MyGame(arcade.Window):
         if self.state == State.START_SCREEN:
             if self.guide_visible:
                 self.guide_visible = False
+                arcade.play_sound(assets.sounds['click'])
             elif 350 < y and y < 600:
                 if 1030 < x and x < 1500:
                     self.guide_visible = True
+                    arcade.play_sound(assets.sounds['click'])
                 if 470 < x and x < 940:
                     self.transition(State.START_FADE_OUT)
+                    arcade.play_sound(assets.sounds['click'])
 
 
     def on_mouse_release(self, x, y, button, _modifiers):
